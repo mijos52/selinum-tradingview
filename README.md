@@ -2,4 +2,7 @@
 
 
 # 16/05/2022
-get all candle stick data from tradingview for backtesting in 1 minute time frame 
+- made login succesfully 
+
+# 17/05/2022
+- login was simplified direct sigin url is now used
