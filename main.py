@@ -1,5 +1,3 @@
-# will have the main class and functions to sort data from tradinvgview
-
 from  selenium import  webdriver 
 import json
 from websocket import create_connection
@@ -9,17 +7,15 @@ import time
 import random
 import string
 import re
-from config import *
+import config
 
 # credentials
-username = USER_NAME
-password = PASSWORD
+username = config.USER_NAME
+password = config.PASSWORD
 
 # variables
 website = 'https://www.tradingview.com/accounts/signin/ '
 websocket_url ='wss://data.tradingview.com/socket.io/websocket?from=chart/s79Lxi3Z/&date=2022_05_16-11_37'
-
-''''code was copied from another source not sure what it is doing'''
 
 def filter_raw_message(text):
     try:
@@ -31,18 +27,17 @@ def filter_raw_message(text):
     except AttributeError:
         print("error")
     
-# generalte a string of length 12 of format qs_cvaqoqjcljes
+
 def generateSession():
-    stringLength=12
+
     letters = string.ascii_lowercase
-    random_string= ''.join(random.choice(letters) for i in range(stringLength))
+    random_string= ''.join(random.choice(letters) for i in range(12))
     return "qs_" +random_string
 
-#generate a string of lenght 12 of format cs_cvaqoqjcljes
 def generateChartSession():
-    stringLength=12
+
     letters = string.ascii_lowercase
-    random_string= ''.join(random.choice(letters) for i in range(stringLength))
+    random_string= ''.join(random.choice(letters) for i in range(12))
     return "cs_" +random_string
 
 # creates a string of ex ~m~3~m~hai
@@ -50,7 +45,6 @@ def prependHeader(st):
     return "~m~" + str(len(st)) + "~m~" + st
 
 def constructMessage(func, paramList):
-    #json_mylist = json.dumps(mylist, separators=(',', ':'))
     return json.dumps({
         "m":func,
         "p":paramList
@@ -82,20 +76,6 @@ def generate_csv(a):
             employee_writer.writerow([ind, ts, float(xi[5]), float(xi[6]), float(xi[7]), float(xi[8]), float(xi[9])])
 
 
-# functions to handle websocket data message , error , close
-# def on_message(ws , message):
-#     print(message)
-
-# def on_close(ws):
-#     print("closed connection")
-
-# def on_error(ws , error):
-#     print(error)
-
-# def on_open(ws):
-#     print('connection open ')
-
-
 driver = webdriver.Chrome()
 driver.get(website)
 
@@ -121,23 +101,13 @@ driver.get('https://in.tradingview.com/chart/s79Lxi3Z/?symbol=NSE%3ANIFTY')
 ''' loads the nifty page for this account wont work on other accounts a url is directly loaded 
 instead of clicking anything for else '''
 
-# initialize websocket using websocket client
-
-# Initialize the headers needed for the websocket connection
 headers = json.dumps({
     'Origin': 'https://data.tradingview.com'
 })
 
-    
-# Then create a connection to the tunnel
 ws = create_connection(
     'wss://data.tradingview.com/socket.io/websocket',headers=headers)
 
-# ws = websocket.WebSocketApp(websocket_url,
-# on_message=on_message , on_close=on_close , on_error=on_error)
-
-# ws.on_open = on_open
-# ws.run_forever()
 
 session= generateSession()
 print("session generated {}".format(session))
@@ -157,7 +127,6 @@ sendMessage(ws, "create_series", [chart_session,"s1","s1","symbol_1","1",300])
 
 sendMessage(ws, "quote_fast_symbols", [session,"BINANCE:BTCUSDT"])
 
-# sendMessage(ws, "create_study", [chart_session,"st1","st1","s1","Volume@tv-basicstudies-118",{"length":20,"col_prev_close":"false"}])
 sendMessage(ws, "quote_hibernate_all", [session])
 
 
